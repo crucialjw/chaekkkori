@@ -477,6 +477,45 @@ const MISSIONS=[
   {cat:'twist',text:'숨겨진 비밀 하나 밝히기',how:'누구도 몰랐던 사실을 꺼내요.'},
   {cat:'orig',text:'원작 속 말투나 장면을 하나 넣기',how:'원작에서 기억나는 말이나 장면을 살짝 빌려 와요.'}
 ];
+/* 반 전체 공유 모드에서 선생님이 '예시 이야기 넣기'로 책장에 넣는 이야기 (2학년 수준, 뒷이야기를 열어 둔 장면) */
+const SAMPLES=[
+  {book:{title:'흥부와 놀부',author:'전래동화',reason:'나누는 마음이 왜 소중한지 생각하게 해요.'},title:'제비가 물어 온 박씨',mood:'warm',
+   cover:{g:4,font:'round',tpos:'top',tsize:10,stk:[{e:'🐦',x:34,y:66,s:20},{e:'✨',x:70,y:58,s:12},{e:'🏠',x:66,y:82,s:14}]},
+   segments:['봄이 되자 다리를 다쳤던 제비가 흥부네 집으로 돌아왔어요. 제비는 물고 온 작은 박씨를 흥부 앞에 툭 떨어뜨렸어요.',
+             '흥부가 박씨를 심자 지붕 위에 커다란 박이 주렁주렁 열렸어요. 가족들은 톱을 들고 첫 번째 박 앞에 모였어요.']},
+  {book:{title:'장화홍련',author:'고전 소설',reason:'억울한 사람의 이야기를 끝까지 들어 주는 마음을 생각해요.'},title:'사또를 찾아온 두 자매',mood:'mystery',
+   cover:{g:2,font:'brush',tpos:'top',tsize:10,stk:[{e:'🌙',x:70,y:56,s:16},{e:'🌸',x:30,y:76,s:16},{e:'🌸',x:62,y:80,s:12}]},
+   segments:['장화와 홍련은 서로를 무척 아끼는 사이좋은 자매였어요. 둘은 언제나 손을 꼭 잡고 다녔어요.',
+             '어느 날 밤, 고을 사또 앞에 두 자매가 조용히 나타났어요. "사또님, 저희 이야기를 들어 주세요." 사또는 고개를 끄덕였어요.']},
+  {book:{title:'혹부리 영감',author:'전래동화',reason:'재치와 욕심에 대해 이야기 나눌 수 있어요.'},title:'도깨비들의 노래 잔치',mood:'fun',
+   cover:{g:3,font:'hand',tpos:'top',tsize:11,stk:[{e:'⛰️',x:30,y:78,s:16},{e:'⭐',x:72,y:56,s:12},{e:'🔥',x:64,y:76,s:14}]},
+   segments:['나무를 하러 간 혹부리 영감은 날이 저물어 산속 빈집에서 하룻밤을 묵게 되었어요. 심심해진 영감은 큰 소리로 노래를 불렀어요.',
+             '그러자 도깨비들이 우르르 몰려와 물었어요. "영감님, 그 고운 노랫소리는 어디서 나오는 거요?"']},
+  {book:{title:'토끼와 거북이',author:'이솝 우화',reason:'포기하지 않는 마음을 배울 수 있어요.'},title:'낮잠에서 깬 토끼',mood:'brave',
+   cover:{g:12,font:'bold',tpos:'top',tsize:10,stk:[{e:'🐰',x:30,y:70,s:18},{e:'🐢',x:68,y:74,s:20}]},
+   segments:['경주 날, 토끼는 저만치 앞서가다 나무 그늘에서 깜빡 잠이 들었어요.',
+             '토끼가 눈을 떴을 때, 거북이는 벌써 결승선 바로 앞까지 와 있었어요. 토끼는 벌떡 일어났어요.']},
+  {book:{title:'금도끼 은도끼',author:'전래동화',reason:'정직이 왜 소중한지 알려 줘요.'},title:'연못에 빠진 쇠도끼',mood:'wise',
+   cover:{g:14,font:'classic',tpos:'top',tsize:10,stk:[{e:'🌊',x:50,y:82,s:18},{e:'✨',x:40,y:58,s:12},{e:'✨',x:64,y:52,s:10}]},
+   segments:['착한 나무꾼이 나무를 베다가 그만 쇠도끼를 연못에 빠뜨리고 말았어요.',
+             '그때 연못에서 하얀 수염의 산신령이 금도끼를 들고 나타나 물었어요. "이 금도끼가 네 도끼냐?"']},
+  {book:{title:'아기 돼지 삼형제',author:'영국 전래동화',reason:'준비하고 노력하는 마음의 힘을 배워요.'},title:'똑똑, 늑대가 왔어요',mood:'adventure',
+   cover:{g:0,font:'round',tpos:'top',tsize:10,stk:[{e:'🏠',x:28,y:72,s:16},{e:'🏠',x:52,y:74,s:16},{e:'🏠',x:76,y:72,s:16}]},
+   segments:['아기 돼지 삼형제는 각자 집을 지었어요. 첫째는 지푸라기로, 둘째는 나무로, 막내는 벽돌로 지었어요.',
+             '어느 날 저녁, 배고픈 늑대가 첫째의 지푸라기 집 앞에 나타났어요. "똑똑, 문 좀 열어 줄래?"']}
+];
+const sampleMissing=()=>SAMPLES.filter(x=>!S.stories.some(s=>s.title===x.title));
+function seedSamples(){
+  const miss=sampleMissing(),now=Date.now();
+  miss.forEach((x,i)=>{
+    const s={id:uid(),book:{...x.book},title:x.title,mood:x.mood,cover:{title:x.title,...clean(x.cover)},
+      segments:x.segments.map(t=>({by:'선생님',text:t,mission:null})),cands:[],voteOpen:false,reads:0,likes:0,
+      cheers:{thrill:0,touch:0,laugh:0},created:now-i*60000};
+    S.stories.push(s);if(CLOUD)Cloud.add(s);
+  });
+  ui.lineup=null;render(true);
+  toast(miss.length?`예시 이야기 ${miss.length}편을 책장에 넣었어요`:'예시 이야기가 이미 모두 있어요');
+}
 const READ_TAGS=['용기를 준 책','웃음을 준 책','생각하게 한 책','다시 읽고 싶은 책','친구에게 권할 책'];
 const CHEERS={thrill:'두근두근',touch:'뭉클',laugh:'빵 터짐'};
 
@@ -1017,6 +1056,7 @@ function shelfView(){
     <div class="filters-wrap"><div class="chips filters${ui.bookOpen?'':' folded'}" id="bookchips" role="group" aria-label="원작으로 보기"><button class="chip" data-act="bookf" data-b="all" aria-pressed="${ui.book==='all'}">모든 원작</button>${(ui.book!=='all'&&!ui.bookOpen?[ui.book,...books.filter(b=>b!==ui.book)]:books).map(b=>`<button class="chip" data-act="bookf" data-b="${esc(b)}" aria-pressed="${ui.book===b}">${esc(b)}</button>`).join('')}</div>
       <button class="btn sm ghost" data-act="bookfold" aria-expanded="${!!ui.bookOpen}" aria-controls="bookchips">${ui.bookOpen?'원작 접기':`원작 ${books.length}권 모두 보기`}</button></div>
     ${ui.book!=='all'?`<div class="panel">${recBox(S.stories.find(s=>s.book.title===ui.book).book)}</div>`:''}
+    ${CLOUD&&sampleMissing().length?`<div class="row" style="margin:-6px 0 14px"><button class="btn sm ghost" data-act="seedask">${ic('book')} 예시 이야기 넣기 (교사용)</button></div>`:''}
     ${list.length?`<div class="feed">${list.map(postHTML).join('')}</div>`:'<p class="empty">아직 이야기가 없어요. 새 릴레이 버튼을 눌러 첫 이야기를 시작해 보세요.</p>'}`;
 }
 function homeView(){
@@ -1179,12 +1219,12 @@ function modalHTML(){
       <div class="row"><button class="btn pri" data-act="certsave">${ic('check')} 인증하기</button><button class="btn ghost" data-act="mclose">다음에 할게요</button></div></div></div>`;
   }
   if(m.type==='teacher'){
-    return `<div class="modal-bg"><form class="modal" id="tform" role="dialog" aria-modal="true" aria-labelledby="mt" autocomplete="off" novalidate><h2 id="mt">투표 마감</h2>
-      <p class="sub">투표 마감은 선생님만 할 수 있어요. 마감하면 표를 가장 많이 받은 글이 다음 장면이 돼요.</p>
+    return `<div class="modal-bg"><form class="modal" id="tform" role="dialog" aria-modal="true" aria-labelledby="mt" autocomplete="off" novalidate><h2 id="mt">${m.then==='seed'?'예시 이야기 넣기':'투표 마감'}</h2>
+      <p class="sub">${m.then==='seed'?`선생님만 할 수 있어요. 흥부와 놀부, 장화홍련, 혹부리 영감 등 예시 이야기 ${sampleMissing().length}편을 책장에 넣어요.`:'투표 마감은 선생님만 할 수 있어요. 마감하면 표를 가장 많이 받은 글이 다음 장면이 돼요.'}</p>
       <label class="fl" for="tpin" style="margin:0">교사 번호</label>
       <input type="password" id="tpin" inputmode="numeric" maxlength="8" autocomplete="off">
       <p class="amsg" role="alert">${esc(m.msg||'')}</p>
-      <div class="row"><button class="btn pri" type="submit">마감하기</button><button class="btn ghost" type="button" data-act="mclose">취소</button></div></form></div>`;
+      <div class="row"><button class="btn pri" type="submit">${m.then==='seed'?'넣기':'마감하기'}</button><button class="btn ghost" type="button" data-act="mclose">취소</button></div></form></div>`;
   }
   return '';
 }
@@ -1545,7 +1585,7 @@ function saveCert(){
 function checkTeacher(){
   const p=$('#tpin'),v=p?p.value:'';
   if(v!==TEACHER_PIN){ui.modal.msg='번호가 맞지 않아요';renderModal();const q=$('#tpin');if(q)q.focus();return}
-  ui.teacher=true;const id=ui.modal.id;ui.modal=null;renderModal();closeVoteNow(id);
+  ui.teacher=true;const {id,then}=ui.modal;ui.modal=null;renderModal();if(then==='seed')seedSamples();else closeVoteNow(id);
 }
 
 document.addEventListener('click',e=>{
@@ -1576,6 +1616,8 @@ document.addEventListener('click',e=>{
       S.myVotes[s.id]=c.id;save();
       mutStory(s.id,x=>voteIn(x,c.id)).then(r=>{afterAdopt(s.id,r);if(!CLOUD&&!(r&&r.adopted))setTimeout(()=>simVotes(s.id),900)});
       render(true);break}
+    case 'seedask':if(ui.teacher){seedSamples();break}
+      ui.modal={type:'teacher',then:'seed',msg:''};renderModal();break;
     case 'closevote':if(ui.teacher){closeVoteNow(d.id);break}
       ui.modal={type:'teacher',id:d.id,msg:''};renderModal();break;
     case 'pg':{const s=story(d.id);ui.pg[s.id]=Math.max(0,Math.min(s.segments.length,(ui.pg[s.id]||0)+(+d.d)));render();break}
